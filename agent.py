@@ -11,7 +11,6 @@ class ModelPredictiveDQN(Agent):
                  g, # transition model head
                  replay_buffer,
                  discount_factor=0.99,
-                 exploration=0.1,
                  minibatch_size=32,
                  replay_start_size=5000,
                  ):
@@ -23,7 +22,6 @@ class ModelPredictiveDQN(Agent):
         self.replay_buffer = replay_buffer
         # hyperparameters
         self.discount_factor = discount_factor
-        self.explortation = exploration
         self.minibatch_size = minibatch_size
         self.replay_start_size = replay_start_size
         # private

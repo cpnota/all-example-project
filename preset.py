@@ -20,8 +20,6 @@ def model_predictive_dqn(
         # Replay buffer settings
         replay_start_size=5000,
         replay_buffer_size=100000,
-        # Exploration 
-        exploration = 0.1,
 ):
     def _model_predictive_dqn(env, writer=None):
         # models
@@ -43,7 +41,6 @@ def model_predictive_dqn(
         replay_buffer = ExperienceReplayBuffer(replay_buffer_size, device=device)
         # create agent
         agent = ModelPredictiveDQN(f, v, r, g, replay_buffer,
-            exploration=exploration,
             minibatch_size=minibatch_size,
             replay_start_size=replay_start_size
         )
