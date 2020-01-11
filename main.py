@@ -1,0 +1,28 @@
+import argparse
+from all.environments import AtariEnvironment
+from all.experiments import Experiment
+from preset import model_predictive_dqn
+
+def run():
+    # parse arguments
+    parser = argparse.ArgumentParser(description="Run an Atari benchmark.")
+    parser.add_argument("env", help="Name of the Atari game (e.g. Pong)")
+    parser.add_argument(
+        "--device",
+        default="cuda",
+        help="The name of the device to run the agent on (e.g. cpu, cuda, cuda:0)",
+    )
+    parser.add_argument(
+        "--frames", type=int, default=200e6, help="The number of training frames"
+    )
+    args = parser.parse_args()
+
+    # create atari environment
+    env = AtariEnvironment(args.env, device=args.device)
+
+    # run the experiment
+    Experiment(model_predictive_dqn(device=args.device), env, frames=args.frames)
+
+
+if __name__ == "__main__":
+    run()
