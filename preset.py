@@ -35,8 +35,8 @@ def model_predictive_dqn(
         # approximators
         f = FeatureNetwork(feature_model, feature_optimizer, writer=writer)
         v = VNetwork(value_model, value_optimizer, writer=writer)
-        r = QNetwork(reward_model, reward_optimizer, writer=writer)
-        g = Approximation(generator_model, generator_optimizer, writer=writer)
+        r = QNetwork(reward_model, reward_optimizer, name='reward', writer=writer)
+        g = Approximation(generator_model, generator_optimizer, name='generator', writer=writer)
         # replay buffer
         replay_buffer = ExperienceReplayBuffer(replay_buffer_size, device=device)
         # create agent
