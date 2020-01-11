@@ -1,7 +1,9 @@
 import argparse
 from all.environments import AtariEnvironment
 from all.experiments import Experiment
+from all.presets.atari import dqn
 from preset import model_predictive_dqn
+
 
 def run():
     # parse arguments
@@ -13,7 +15,7 @@ def run():
         help="The name of the device to run the agent on (e.g. cpu, cuda, cuda:0)",
     )
     parser.add_argument(
-        "--frames", type=int, default=200e6, help="The number of training frames"
+        "--frames", type=int, default=2e6, help="The number of training frames"
     )
     args = parser.parse_args()
 
@@ -22,6 +24,9 @@ def run():
 
     # run the experiment
     Experiment(model_predictive_dqn(device=args.device), env, frames=args.frames)
+
+    # run the baseline agent for comparison
+    Experiment(dqn(device=args.device, replay_buffer_size=1e5, last_frame=(args.frames * 4)), env, frames=args.frames)
 
 
 if __name__ == "__main__":
