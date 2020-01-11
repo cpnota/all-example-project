@@ -15,8 +15,6 @@ def model_predictive_dqn(
         eps=1.5e-4,
         # Training settings
         minibatch_size=32,
-        update_frequency=4,
-        target_update_frequency=1000,
         # Replay buffer settings
         replay_start_size=5000,
         replay_buffer_size=100000,
