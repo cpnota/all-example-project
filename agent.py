@@ -50,20 +50,20 @@ class ModelPredictiveDQN(Agent):
 
             # forward pass
             features = self.f(states)
-            predicted_rewards = self.r(features, actions)
             predicted_values = self.v(features)
+            predicted_rewards = self.r(features, actions)
             predicted_next_states = self.g(features, actions)
 
             # compute target value
             target_values = rewards + self.discount_factor * self.v.target(self.f.target(next_states))
 
             # compute losses
-            reward_loss = mse_loss(predicted_rewards, rewards)
             value_loss = mse_loss(predicted_values, target_values)
+            reward_loss = mse_loss(predicted_rewards, rewards)
             generator_loss = mse_loss(predicted_next_states.features, next_states.features.float())
 
             # backward passes
-            self.r.reinforce(reward_loss)
             self.v.reinforce(value_loss)
+            self.r.reinforce(reward_loss)
             self.g.reinforce(generator_loss)
             self.f.reinforce()
