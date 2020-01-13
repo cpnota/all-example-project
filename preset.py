@@ -11,7 +11,7 @@ def model_predictive_dqn(
         discount_factor=0.99,
         last_frame=40e6,
         # Adam optimizer settings
-        lr=3e-4,
+        lr=2e-4,
         eps=1.5e-4,
         # Training settings
         minibatch_size=32,

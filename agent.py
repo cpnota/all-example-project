@@ -72,8 +72,8 @@ class ModelPredictiveDQN(Agent):
         predicted_rewards = self.r.eval(features)
         predicted_next_states = self.g.eval(features)
         predicted_next_values = self.v.eval(self.f.eval(predicted_next_states))
-        predicted_returns = predicted_rewards.squeeze(0) + self.discount_factor * predicted_next_values
-        return torch.argmax(predicted_returns, dim=0)
+        predicted_returns = predicted_rewards + self.discount_factor * predicted_next_values
+        return torch.argmax(predicted_returns, dim=1)
 
     def _train(self):
         """Update the agent."""
