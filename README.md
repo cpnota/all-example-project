@@ -1,6 +1,6 @@
 ## About
 
-This repository shows how the `autonomous-learning-library` can be used to build new reinforcement learning agents.
+This repository shows how  [Autonomous Learning Library](https://github.com/cpnota/autonomous-learning-library) can be used to build new reinforcement learning agents.
 In particular, it contains a *model predictive* agent that predicts future frames and uses them to guide decision making.
 
 ## Instructions
