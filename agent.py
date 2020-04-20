@@ -55,6 +55,9 @@ class ModelPredictiveDQN(Agent):
         Args:
             state (State): The current environment state.
             reward (float): The reward for the previous state-action pair.
+
+        Returns:
+            torch.Tensor: The action to take at the current timestep.
         """
         self.replay_buffer.store(self._state, self._action, reward, state)
         self._train()
@@ -62,16 +65,33 @@ class ModelPredictiveDQN(Agent):
         self._action = self._choose_action(state)
         return self._action
 
-    def _choose_action(self, state):
+    def eval(self, state, _):
         """
-        Choose the best action in the current state using our model predictions.
-        Note that every call below uses .eval(), which puts torch in no_grad mode,
-        and sometimes changes their behavior.
+        Choose an action without updating.
+
+        Args:
+            state (State): The current environment state.
+            _ (float): The reward for the previous state-action pair (unused).
+
+        Returns:
+            torch.Tensor: The action to take at the current timestep.
         """
         features = self.f.eval(state)
         predicted_rewards = self.r.eval(features)
         predicted_next_states = self.g.eval(features)
         predicted_next_values = self.v.eval(self.f.eval(predicted_next_states))
+        predicted_returns = predicted_rewards + self.discount_factor * predicted_next_values
+        return torch.argmax(predicted_returns, dim=1)
+
+    def _choose_action(self, state):
+        """
+        Choose the best action in the current state using our model predictions.
+        Note that every call below uses .no_grad(), which puts torch in no_grad mode.
+        """
+        features = self.f.no_grad(state)
+        predicted_rewards = self.r.no_grad(features)
+        predicted_next_states = self.g.no_grad(features)
+        predicted_next_values = self.v.no_grad(self.f.no_grad(predicted_next_states))
         predicted_returns = predicted_rewards + self.discount_factor * predicted_next_values
         return torch.argmax(predicted_returns, dim=1)
 

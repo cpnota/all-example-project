@@ -1,6 +1,6 @@
 import argparse
 from all.environments import AtariEnvironment
-from all.experiments import Experiment
+from all.experiments import run_experiment
 from all.presets.atari import dqn
 from preset import model_predictive_dqn
 
@@ -23,10 +23,10 @@ def run():
     env = AtariEnvironment(args.env, device=args.device)
 
     # run the experiment
-    Experiment(model_predictive_dqn(device=args.device), env, frames=args.frames)
+    run_experiment(model_predictive_dqn(device=args.device), env, args.frames)
 
     # run the baseline agent for comparison
-    Experiment(dqn(device=args.device, replay_buffer_size=1e5, last_frame=(args.frames * 4)), env, frames=args.frames)
+    run_experiment(dqn(device=args.device, replay_buffer_size=1e5, last_frame=(args.frames * 4)), env, args.frames)
 
 
 if __name__ == "__main__":
