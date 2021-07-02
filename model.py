@@ -1,6 +1,6 @@
 import torch
 from all import nn
-from all.environments import State
+from all.core import State
 
 FRAMES = 4
 
@@ -40,10 +40,12 @@ class Generator(nn.Module):
         )
 
     def forward(self, states, actions=None):
-        x = self.fc(states.features)
+        x = self.fc(states.observation)
         x = x.view((-1, 64, 7, 7))
         x = self.deconv(x)
-        if actions is None:
-            return State(x.view((-1, FRAMES, 84, 84)))
         x = x.view((-1, self.num_actions, FRAMES, 84, 84))
-        return State(x[torch.arange(len(x)), actions].view((-1, FRAMES, 84, 84)))
+        if actions is not None:
+            x = x[torch.arange(len(x)), actions]
+            return states.update('observation', states.as_output(x))
+        x = states.as_output(x)
+        return State.array([states.update('observation', _x) for _x in x])

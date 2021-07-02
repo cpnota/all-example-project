@@ -1,18 +1,21 @@
 ## About
 
 This repository shows how  [Autonomous Learning Library](https://github.com/cpnota/autonomous-learning-library) can be used to build new reinforcement learning agents.
-In particular, it contains a *model predictive* agent that predicts future frames and uses them to guide decision making.
+In particular, it contains a *model based* agent that predicts future frames and uses them to guide decision making.
 
 ## Instructions
 
 First, you'll need the latest version of [Pytorch](https://pytorch.org).
 If you wish to view [Tensorboard](https://github.com/tensorflow/tensorboard) logs, you'll also need to grab a copy of that (it also comes with `tensorflow`).
-Then, you'll need to install the `autonomous-learning-library`:
+Then, you'll need to install the `autonomous-learning-library` along with the Atari environments:
 
 
 ```
-pip install autonomous-learning-library
+pip install autonomous-learning-library[atari]
 ```
+
+Unfortunately, the current IP holders for the Atari library made it more difficult to acquire a license and use the ROMs than it used to be.
+If you have a license to use the ROMs, you can try [AutoROM](https://github.com/PettingZoo-Team/AutoROM).
 
 ## Usage
 

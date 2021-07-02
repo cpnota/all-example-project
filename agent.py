@@ -3,9 +3,9 @@ from torch.nn.functional import mse_loss
 from all.agents import Agent
 
 
-class ModelPredictiveDQN(Agent):
+class ModelBasedDQN(Agent):
     """
-    Model Predictive DQN.
+    Model Based DQN.
     This is a simplified model predictive control algorithm based on DQN.
     The purpose of this agent is to demonstrate how the autonomous-learning-library
     can be used to build new types of agents from scratch, while reusuing many
@@ -48,40 +48,12 @@ class ModelPredictiveDQN(Agent):
         self._state = None
         self._action = None
 
-    def act(self, state, reward):
-        """
-        Update the agent and choose a new action.
-
-        Args:
-            state (State): The current environment state.
-            reward (float): The reward for the previous state-action pair.
-
-        Returns:
-            torch.Tensor: The action to take at the current timestep.
-        """
-        self.replay_buffer.store(self._state, self._action, reward, state)
+    def act(self, state):
+        self.replay_buffer.store(self._state, self._action, state)
         self._train()
         self._state = state
         self._action = self._choose_action(state)
         return self._action
-
-    def eval(self, state, _):
-        """
-        Choose an action without updating.
-
-        Args:
-            state (State): The current environment state.
-            _ (float): The reward for the previous state-action pair (unused).
-
-        Returns:
-            torch.Tensor: The action to take at the current timestep.
-        """
-        features = self.f.eval(state)
-        predicted_rewards = self.r.eval(features)
-        predicted_next_states = self.g.eval(features)
-        predicted_next_values = self.v.eval(self.f.eval(predicted_next_states))
-        predicted_returns = predicted_rewards + self.discount_factor * predicted_next_values
-        return torch.argmax(predicted_returns, dim=1)
 
     def _choose_action(self, state):
         """
@@ -93,7 +65,7 @@ class ModelPredictiveDQN(Agent):
         predicted_next_states = self.g.no_grad(features)
         predicted_next_values = self.v.no_grad(self.f.no_grad(predicted_next_states))
         predicted_returns = predicted_rewards + self.discount_factor * predicted_next_values
-        return torch.argmax(predicted_returns, dim=1)
+        return torch.argmax(predicted_returns, dim=-1)
 
     def _train(self):
         """Update the agent."""
@@ -113,10 +85,25 @@ class ModelPredictiveDQN(Agent):
             # compute losses
             value_loss = mse_loss(predicted_values, target_values)
             reward_loss = mse_loss(predicted_rewards, rewards)
-            generator_loss = mse_loss(predicted_next_states.features, next_states.features.float())
+            generator_loss = mse_loss(predicted_next_states.observation, next_states.observation.float())
 
             # backward passes
             self.v.reinforce(value_loss)
             self.r.reinforce(reward_loss)
             self.g.reinforce(generator_loss)
             self.f.reinforce()
+
+class ModelBasedTestAgent(Agent):
+    def __init__(self, f, v, r, g):
+        self.f = f
+        self.v = v
+        self.r = r
+        self.g = g
+
+    def act(self, state):
+        features = self.f.eval(state)
+        predicted_rewards = self.r.eval(features)
+        predicted_next_states = self.g.eval(features)
+        predicted_next_values = self.v.eval(self.f.eval(predicted_next_states))
+        predicted_returns = predicted_rewards + self.discount_factor * predicted_next_values
+        return torch.argmax(predicted_returns, dim=1)
