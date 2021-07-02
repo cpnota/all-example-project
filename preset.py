@@ -4,7 +4,7 @@ from all.bodies import DeepmindAtariBody
 from all.logging import DummyWriter
 from all.memory import ExperienceReplayBuffer
 from all.presets import Preset, PresetBuilder
-from agent import ModelBasedDQN
+from agent import ModelBasedDQN, ModelBasedTestAgent
 from model import shared_feature_layers, value_head, reward_head, Generator
 
 
@@ -44,7 +44,6 @@ class ModelBasedDQNAtariPreset(Preset):
         self.value_model = value_head().to(device)
         self.reward_model = reward_head(env).to(device)
         self.generator_model = Generator(env).to(device)
-        self.n_actions = env.action_space.n
 
     def agent(self, writer=DummyWriter(), train_steps=float("inf")):
         # optimizers
@@ -72,14 +71,11 @@ class ModelBasedDQNAtariPreset(Preset):
         return DeepmindAtariBody(agent, lazy_frames=True)
 
     def test_agent(self):
-        pass
-        # q = QNetwork(copy.deepcopy(self.model))
-        # policy = GreedyPolicy(
-        #     q,
-        #     self.n_actions,
-        #     epsilon=self.hyperparameters["test_exploration"]
-        # )
-        # return DeepmindAtariBody(DQNTestAgent(policy))
+        f = FeatureNetwork(self.feature_model, None)
+        v = VNetwork(self.value_model, None)
+        r = QNetwork(self.reward_model, None)
+        g = Approximation(self.generator_model, None)
+        return DeepmindAtariBody(ModelBasedTestAgent(f, v, r, g, self.hyperparameters["discount_factor"]))
 
 
 model_based_dqn = PresetBuilder("model_based_dqn", default_hyperparameters, ModelBasedDQNAtariPreset)

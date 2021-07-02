@@ -26,7 +26,7 @@ def run():
     run_experiment(model_based_dqn.device(args.device), env, args.frames)
 
     # run the baseline agent for comparison
-    run_experiment(dqn(device=args.device, replay_buffer_size=1e5, last_frame=(args.frames * 4)), env, args.frames)
+    run_experiment(dqn.device(args.device).hyperparameters(replay_buffer_size=1e5), env, args.frames)
 
 
 if __name__ == "__main__":

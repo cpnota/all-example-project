@@ -94,11 +94,12 @@ class ModelBasedDQN(Agent):
             self.f.reinforce()
 
 class ModelBasedTestAgent(Agent):
-    def __init__(self, f, v, r, g):
+    def __init__(self, f, v, r, g, discount_factor=0.99):
         self.f = f
         self.v = v
         self.r = r
         self.g = g
+        self.discount_factor = discount_factor
 
     def act(self, state):
         features = self.f.eval(state)
@@ -106,4 +107,4 @@ class ModelBasedTestAgent(Agent):
         predicted_next_states = self.g.eval(features)
         predicted_next_values = self.v.eval(self.f.eval(predicted_next_states))
         predicted_returns = predicted_rewards + self.discount_factor * predicted_next_values
-        return torch.argmax(predicted_returns, dim=1)
+        return torch.argmax(predicted_returns, dim=-1)
